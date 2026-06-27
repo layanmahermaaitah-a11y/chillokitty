@@ -12,7 +12,7 @@ app = FastAPI(title="Leru's Cozy Blog API", version="2.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origin_regex=".*", # يحل مشكلة الـ CORS مع الـ Credentials فوراً
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
