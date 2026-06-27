@@ -2,17 +2,24 @@
 from sqlalchemy.orm import Session
 from typing import List
 from ..database import get_db
-from ..models import Comment, Post, User # تم تصحيح استيراد User هنا
+from ..models import Comment, Post, User
 from ..schemas import CommentCreate, CommentOut
-from .auth import get_current_user
+from .auth import get_current_user, get_optional_user
 
 router = APIRouter()
 
 @router.post("/", response_model=CommentOut, status_code=status.HTTP_201_CREATED)
-def create_comment(comment: CommentCreate, db: Session = Depends(get_db)):
+def create_comment(comment: CommentCreate, db: Session = Depends(get_db), current_user: User = Depends(get_optional_user)):
     post = db.query(Post).filter(Post.id == comment.post_id).first()
     if not post: raise HTTPException(status_code=404, detail="Post not found")
+    
     new_comment = Comment(**comment.model_dump())
+    
+    # إذا كان الزائر مسجلاً للدخول، نقوم بتوثيق تعليقه
+    if current_user:
+        new_comment.user_id = current_user.id
+        new_comment.guest_name = current_user.username
+
     db.add(new_comment); db.commit(); db.refresh(new_comment)
     return new_comment
 

@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from .database import engine, Base, SessionLocal
 from . import models
-from .routers import auth, posts, comments, categories
+from .routers import auth, posts, comments, categories, guestbook
 
 Base.metadata.create_all(bind=engine)
 
@@ -25,8 +25,8 @@ app.include_router(auth.router, prefix="/auth", tags=["Auth"])
 app.include_router(posts.router, prefix="/posts", tags=["Posts"])
 app.include_router(comments.router, prefix="/comments", tags=["Comments"])
 app.include_router(categories.router, prefix="/categories", tags=["Categories"])
+app.include_router(guestbook.router, prefix="/guestbook", tags=["Guestbook"])
 
-# زارع البيانات الأولي (حتى لا تفتحي الموقع وتجديه فارغاً من الكروت)
 def seed_data():
     db = SessionLocal()
     try:

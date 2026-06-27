@@ -99,7 +99,7 @@
             color: #ebb9b9;
             font-size: 1.8rem;
             font-family: 'Playfair Display', serif;
-            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: 0.4s;
             margin: 0 auto;
             display: flex;
             justify-content: center;
@@ -123,8 +123,8 @@
         }
 
         .nav-header {
-            width: 90%;
-            max-width: 1000px;
+            width: 95%;
+            max-width: 1400px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -158,7 +158,7 @@
         .page-section {
             display: none;
             width: 100%;
-            max-width: 950px;
+            max-width: 1200px;
             animation: fadeUp 0.6s ease forwards;
         }
 
@@ -178,11 +178,11 @@
             }
         }
 
-        /* --- Home Cards Grid --- */
+        /* --- Home Cards --- */
         .home-grid {
             display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 40px;
+            grid-template-columns: 350px 1fr;
+            gap: 50px;
             width: 100%;
         }
 
@@ -346,7 +346,7 @@
         .blog-post {
             background: var(--paper-color);
             color: #2b1f18;
-            padding: 50px 60px;
+            padding: 60px 80px;
             margin-bottom: 60px;
             position: relative;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
@@ -397,13 +397,51 @@
         }
 
         .post-body p {
-            line-height: 1.9;
-            font-size: 1.05rem;
+            font-size: 1.15rem;
+            line-height: 2.1;
+            color: #3b2f25;
             white-space: pre-wrap;
             margin-bottom: 20px;
         }
 
-        /* Multiple Polaroid Gallery */
+        .interaction-bar {
+            display: flex;
+            gap: 15px;
+            margin: 25px 0;
+            padding-top: 15px;
+            border-top: 1px dashed var(--paper-dark);
+        }
+
+        .interaction-btn {
+            background: none;
+            border: 1px solid var(--paper-dark);
+            color: #665c52;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-family: 'Courier Prime';
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+            .interaction-btn:hover {
+                background: var(--accent-gold);
+                color: white;
+                border-color: var(--accent-gold);
+            }
+
+            .interaction-btn.liked {
+                color: var(--accent-red);
+                border-color: var(--accent-red);
+                background: rgba(138, 51, 51, 0.1);
+            }
+
+            .interaction-btn.bookmarked {
+                color: var(--accent-gold);
+                border-color: var(--accent-gold);
+                background: rgba(184, 141, 94, 0.1);
+            }
+
         .polaroid-gallery {
             display: flex;
             flex-wrap: wrap;
@@ -466,11 +504,9 @@
                 color: var(--accent-red);
             }
 
-        /* --- COMPACT & COZY COMMENTS SECTION --- */
+        /* --- Comments Section --- */
         .comments-section {
-            margin-top: 35px;
-            padding-top: 20px;
-            border-top: 1px dashed var(--paper-dark);
+            margin-top: 15px;
         }
 
         .comments-title {
@@ -499,6 +535,9 @@
                 font-size: 0.9rem;
                 color: #1a1614;
                 margin-right: 4px;
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
             }
 
         .comment-meta {
@@ -506,6 +545,11 @@
             font-size: 0.7rem;
             color: #a39281;
             margin-left: 8px;
+        }
+
+        .verified-badge {
+            color: var(--accent-red);
+            font-size: 0.8rem;
         }
 
         .comment-form {
@@ -546,6 +590,29 @@
                 .comment-form button:hover {
                     background: #2b1f18;
                 }
+
+        /* --- Guestbook Entries --- */
+        .gb-entry {
+            background: transparent;
+            border: 1px solid var(--paper-dark);
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            position: relative;
+        }
+
+            .gb-entry p {
+                font-size: 1rem;
+                color: #3b2f25;
+                margin-bottom: 10px;
+                font-style: italic;
+            }
+
+            .gb-entry span {
+                font-family: 'Courier Prime';
+                font-size: 0.8rem;
+                color: var(--accent-gold);
+            }
 
         /* --- Modals --- */
         .modal-overlay {
@@ -607,10 +674,6 @@
             outline: none;
         }
 
-            .modal-content input:focus, .modal-content textarea:focus {
-                border-color: var(--accent-gold);
-            }
-
         .modal-content button.submit-btn {
             background: #2b1f18;
             color: var(--paper-color);
@@ -629,7 +692,6 @@
                 background: var(--accent-red);
             }
 
-        /* Custom Confirm Dialog Box */
         .confirm-box {
             max-width: 420px;
             padding: 30px;
@@ -664,7 +726,7 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
             opacity: 0;
             transform: translateY(20px);
-            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            transition: all 0.4s;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -694,10 +756,11 @@
     <div class="modal-overlay" id="login-modal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal('login-modal')">×</button>
-            <h3>Admin Login</h3>
-            <input type="text" id="login-username" placeholder="Username" required>
-            <input type="password" id="login-password" placeholder="Password" required>
-            <button class="submit-btn" onclick="handleLogin()">Unlock Archives</button>
+            <h3 id="auth-title">Admin / Guest Login</h3>
+            <input type="text" id="auth-username" placeholder="Username" required>
+            <input type="password" id="auth-password" placeholder="Password" required>
+            <button class="submit-btn" id="auth-action-btn" onclick="handleLogin()">Unlock Archives</button>
+            <button class="cozy-btn" style="margin-top: 10px; border:none; text-decoration:underline;" id="toggle-auth-btn" onclick="toggleAuthMode()">New here? Create an account</button>
         </div>
     </div>
 
@@ -709,12 +772,8 @@
             <input type="text" id="cat-name" placeholder="Display Name (e.g. Cinema or Sketches)">
             <input type="text" id="cat-slug" placeholder="URL Identifier (e.g. cinema - lowercase only)">
             <input type="text" id="cat-img" placeholder="Paste Cover Image URL">
-            <label style="font-size:0.8rem; font-family:'Courier Prime', monospace; color:#665c52;">Card Vibe / Type:</label>
-            <select id="cat-type">
-                <option value="standard">Standard Notes</option>
-                <option value="music">Music Shelf (Audio Display)</option>
-                <option value="gallery">Photo Gallery</option>
-            </select>
+            <label style="font-size:0.8rem; font-family:'Courier Prime'; color:#665c52;">Card Vibe / Type:</label>
+            <select id="cat-type"><option value="standard">Standard</option><option value="music">Music Shelf</option><option value="gallery">Photo Gallery</option></select>
             <button class="submit-btn" onclick="submitCategory()">Save Realm</button>
         </div>
     </div>
@@ -726,14 +785,11 @@
             <input type="hidden" id="edit-post-id">
             <input type="text" id="post-title" placeholder="Entry Title" required>
             <textarea id="post-content" rows="6" placeholder="Pour your cozy thoughts here..." required></textarea>
-
-            <input type="text" id="post-media-url" placeholder="Paste standard YouTube / Spotify Link (Auto-converted)">
-
+            <input type="text" id="post-media-url" placeholder="Paste standard YouTube / Spotify Link">
             <div id="image-upload-section">
-                <label style="font-size:0.85rem; color:#665c52;">Attach Polaroid memories (multiple images allowed):</label><br><br>
+                <label style="font-size:0.85rem; color:#665c52;">Attach Polaroid memories:</label><br><br>
                 <input type="file" id="post-file-input" accept="image/*" multiple>
             </div>
-
             <select id="post-category"></select>
             <button class="submit-btn" onclick="submitPost()">Publish Entry</button>
         </div>
@@ -755,6 +811,8 @@
             <button class="cozy-btn" id="home-nav-btn" onclick="navigateTo('home')" style="display: none;">← Return</button>
             <div style="flex-grow: 1;"></div>
             <div class="header-actions">
+                <button class="cozy-btn" id="bookmarks-btn" style="display: none;" onclick="navigateTo('bookmarks', 'My Bookmarks')">🔖 Bookmarks</button>
+                <button class="cozy-btn" id="guestbook-btn" onclick="navigateTo('guestbook', 'Guestbook')">📖 Guestbook</button>
                 <button class="cozy-btn" id="create-post-btn" style="display: none;" onclick="openPostModal()">✍️ Draft</button>
                 <button class="cozy-btn" id="admin-btn" onclick="toggleAdminState()">Login</button>
             </div>
@@ -766,7 +824,8 @@
                     <img class="profile-img" src="https://i.pinimg.com/736x/6c/58/f9/6c58f97aeeedae5b58ce40915d1b8f90.jpg" alt="Layan">
                     <div class="profile-bio">
                         <h2>layan's corner</h2>
-                        <p>Welcome to my headspace. I spend my time wandering, writing, and chasing the perfect aesthetic light. This blog is a collection of my favorite things—the quiet, the moody, and the beautiful. Make yourself at home.</div>
+                        <p>Welcome to my headspace. I spend my time wandering, writing, and chasing the perfect aesthetic light. This blog is a collection of my favorite things. Make yourself at home.</p>
+                    </div>
                 </div>
                 <div class="custom-cards-grid" id="cards-grid-target"></div>
             </div>
@@ -778,16 +837,35 @@
                 <div id="posts-container"></div>
             </div>
         </div>
+
+        <div id="page-guestbook" class="page-section">
+            <div class="notebook-view">
+                <h2>Guestbook</h2>
+                <div id="guestbook-form" style="display:none; margin-bottom: 30px; text-align:center;">
+                    <textarea id="gb-content" rows="3" placeholder="Leave a nice message for the admin..." style="width:100%; padding:15px; border-radius:6px; border:1px solid var(--paper-dark); font-family:inherit; margin-bottom:10px;"></textarea>
+                    <button class="submit-btn" onclick="postGuestbook()">Sign the Book</button>
+                </div>
+                <p id="gb-login-msg" style="color:var(--accent-red); font-size:0.9rem; text-align:center; margin-bottom:20px;">(Guests must login to sign the book)</p>
+                <div id="guestbook-entries"></div>
+            </div>
+        </div>
     </div>
 
     <script>
+        // ملاحظة: تأكدي من أن الرابط هو نفس رابط الباك إند بالضبط. إذا كنتِ في نفس الدومين استخدمي مسار نسبي
         const API_URL = "https://chillokitty.onrender.com";
         let activeCategorySlug = "";
         let globalCategories = [];
         let editingPostTempData = null;
         let pendingConfirmAction = null;
 
-        // --- UI Helpers ---
+        // --- Helpers ---
+        function getHeaders() {
+            const h = { "Content-Type": "application/json" };
+            const t = localStorage.getItem('token');
+            if (t) h["Authorization"] = `Bearer ${t}`;
+            return h;
+        }
         function showToast(msg, isError = false) {
             const container = document.getElementById('toast-container');
             const t = document.createElement('div');
@@ -795,30 +873,23 @@
             t.innerHTML = `${isError ? '⚠️' : '✨'} <span>${msg}</span>`;
             container.appendChild(t);
             setTimeout(() => t.classList.add('show'), 20);
-            setTimeout(() => {
-                t.classList.remove('show');
-                setTimeout(() => t.remove(), 400);
-            }, 3500);
+            setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 3500);
         }
-
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         function formatDate(d) { return new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }); }
 
-        // Custom UI Confirm Router
         function askConfirm(msg, actionCallback) {
             document.getElementById('confirm-dialog-msg').innerText = msg;
             pendingConfirmAction = actionCallback;
             openModal('confirm-modal');
         }
-
         document.getElementById('confirm-execute-btn').addEventListener('click', () => {
             if (pendingConfirmAction) pendingConfirmAction();
-            closeModal('confirm-modal');
-            pendingConfirmAction = null;
+            closeModal('confirm-modal'); pendingConfirmAction = null;
         });
 
-        // --- Entry Gate ---
+        // --- Init ---
         document.getElementById('enter-btn').addEventListener('click', () => {
             document.getElementById('entering-screen').classList.add('fade-out');
             setTimeout(() => {
@@ -828,54 +899,18 @@
             }, 1000);
         });
 
-        async function loadRealmCategories() {
-            const target = document.getElementById('cards-grid-target');
-            const isAdmin = localStorage.getItem('role') === 'admin';
-            try {
-                const res = await fetch(`${API_URL}/categories/`);
-                globalCategories = await res.json();
-                target.innerHTML = '';
-
-                const postSelect = document.getElementById('post-category');
-                postSelect.innerHTML = globalCategories.map(c => `<option value="${c.slug}">${c.name}</option>`).join('');
-
-                globalCategories.forEach(c => {
-                    const safeCat = JSON.stringify(c).replace(/'/g, "'");
-                    const adminBar = isAdmin ? `
-                            <div class="card-admin-bar">
-                                <span onclick='event.stopPropagation(); openCatModal(true, ${safeCat})' title="Edit Card">✏️</span>
-                                <span onclick='event.stopPropagation(); askConfirm("Destroy the ${c.name} realm card?", () => deleteCategory(${c.id}))' style="color:#ff6b6b" title="Delete">🗑️</span>
-                            </div>` : '';
-
-                    target.innerHTML += `
-                            <div class="vintage-card" onclick="navigateTo('${c.slug}', '${c.name}')">
-                                ${adminBar}
-                                <img src="${c.image_url}" alt="${c.name}">
-                                <div class="vintage-card-title">${c.name}</div>
-                            </div>`;
-                });
-
-                if (isAdmin) {
-                    target.innerHTML += `
-                            <div class="vintage-card add-card-placeholder" onclick="openCatModal(false)">
-                                <span style="font-size:2.2rem">+</span>
-                                <span style="font-size:0.8rem; margin-top:6px">ADD REALM</span>
-                            </div>`;
-                }
-            } catch (e) { showToast("Backend unreachable. Ensure Uvicorn is running.", true); }
-            checkAuthUI();
-        }
-
         function navigateTo(slug, displayName) {
+            document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
+            document.getElementById('home-nav-btn').style.display = slug === 'home' ? 'none' : 'block';
+
             if (slug === 'home') {
                 document.getElementById('page-home').classList.add('active');
-                document.getElementById('page-inner').classList.remove('active');
-                document.getElementById('home-nav-btn').style.display = 'none';
                 activeCategorySlug = "";
+            } else if (slug === 'guestbook') {
+                document.getElementById('page-guestbook').classList.add('active');
+                loadGuestbook();
             } else {
-                document.getElementById('page-home').classList.remove('active');
                 document.getElementById('page-inner').classList.add('active');
-                document.getElementById('home-nav-btn').style.display = 'block';
                 activeCategorySlug = slug;
                 document.getElementById('inner-section-title').innerText = displayName || slug;
                 loadPosts(slug);
@@ -883,182 +918,130 @@
         }
 
         function checkAuthUI() {
+            const role = localStorage.getItem('role');
             const hasToken = !!localStorage.getItem('token');
             document.getElementById('admin-btn').innerText = hasToken ? "Logout" : "Login";
-            document.getElementById('create-post-btn').style.display = hasToken ? 'block' : 'none';
+            document.getElementById('create-post-btn').style.display = role === 'admin' ? 'block' : 'none';
+            document.getElementById('bookmarks-btn').style.display = hasToken ? 'block' : 'none';
+
+            const gbForm = document.getElementById('guestbook-form');
+            const gbMsg = document.getElementById('gb-login-msg');
+            if (gbForm) { gbForm.style.display = hasToken ? 'block' : 'none'; gbMsg.style.display = hasToken ? 'none' : 'block'; }
         }
 
         function toggleAdminState() {
             if (localStorage.getItem('token')) {
-                localStorage.removeItem('token');
-                showToast("Archives locked.");
-                loadRealmCategories();
-                if (activeCategorySlug) loadPosts(activeCategorySlug);
+                localStorage.removeItem('token'); localStorage.removeItem('role'); localStorage.removeItem('username');
+                showToast("Archives locked."); navigateTo('home'); loadRealmCategories();
             } else openModal('login-modal');
         }
 
+        // --- Auth ---
+        let isLoginMode = true;
+        function toggleAuthMode() {
+            isLoginMode = !isLoginMode;
+            document.getElementById('auth-title').innerText = isLoginMode ? "Admin / Guest Login" : "Join the Realm";
+            document.getElementById('auth-action-btn').innerText = isLoginMode ? "Unlock Archives" : "Create Account";
+            document.getElementById('auth-action-btn').onclick = isLoginMode ? handleLogin : handleRegister;
+            document.getElementById('toggle-auth-btn').innerText = isLoginMode ? "New here? Create an account" : "Already have the key? Login";
+        }
+
+        async function handleRegister() {
+            const u = document.getElementById('auth-username').value;
+            const p = document.getElementById('auth-password').value;
+            try {
+                const res = await fetch(`${API_URL}/auth/register`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username: u, password: p }) });
+                if (res.ok) { showToast("Account created! You can now login."); toggleAuthMode(); }
+                else { const error = await res.json(); showToast(error.detail || "Registration failed.", true); }
+            } catch (e) { showToast("Server error.", true); }
+        }
+
         async function handleLogin() {
-            const u = document.getElementById('login-username').value;
-            const p = document.getElementById('login-password').value;
-            const params = new URLSearchParams({ username: u, password: p });
+            const params = new URLSearchParams({ username: document.getElementById('auth-username').value, password: document.getElementById('auth-password').value });
             try {
                 const res = await fetch(`${API_URL}/auth/login`, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: params });
                 if (res.ok) {
-                    localStorage.setItem('token', (await res.json()).access_token);
-                    showToast("Identity confirmed. Welcome back."); closeModal('login-modal');
-                    loadRealmCategories();
+                    const data = await res.json();
+                    localStorage.setItem('token', data.access_token);
+                    localStorage.setItem('role', data.role);
+                    localStorage.setItem('username', data.username);
+                    showToast("Identity confirmed. Welcome back.");
+                    closeModal('login-modal'); loadRealmCategories();
                 } else showToast("Invalid credentials.", true);
             } catch (e) { showToast("Server error.", true); }
         }
 
-        // --- Category Logic ---
-        function openCatModal(isEdit = false, cat = null) {
-            document.getElementById('cat-modal-title').innerText = isEdit ? "Edit Realm Card" : "Create New Realm";
-            document.getElementById('edit-cat-id').value = isEdit ? cat.id : "";
-            document.getElementById('cat-name').value = isEdit ? cat.name : "";
-            document.getElementById('cat-slug').value = isEdit ? cat.slug : "";
-            document.getElementById('cat-img').value = isEdit ? cat.image_url : "";
-            document.getElementById('cat-type').value = isEdit ? cat.card_type : "standard";
-            openModal('cat-modal');
+        // --- Categories ---
+        async function loadRealmCategories() {
+            const target = document.getElementById('cards-grid-target');
+            const isAdmin = localStorage.getItem('role') === 'admin';
+            try {
+                const res = await fetch(`${API_URL}/categories/`);
+                globalCategories = await res.json();
+                target.innerHTML = '';
+                document.getElementById('post-category').innerHTML = globalCategories.map(c => `<option value="${c.slug}">${c.name}</option>`).join('');
+
+                globalCategories.forEach(c => {
+                    const safeCat = JSON.stringify(c).replace(/'/g, "'");
+                    const adminBar = isAdmin ? `<div class="card-admin-bar"><span onclick='event.stopPropagation(); openCatModal(true, ${safeCat})'>✏️</span><span onclick='event.stopPropagation(); askConfirm("Destroy realm?", () => deleteCategory(${c.id}))' style="color:#ff6b6b">🗑️</span></div>` : '';
+                    target.innerHTML += `<div class="vintage-card" onclick="navigateTo('${c.slug}', '${c.name}')">${adminBar}<img src="${c.image_url}"><div class="vintage-card-title">${c.name}</div></div>`;
+                });
+                if (isAdmin) target.innerHTML += `<div class="vintage-card add-card-placeholder" onclick="openCatModal(false)"><span style="font-size:2.2rem">+</span><span style="font-size:0.8rem; margin-top:6px">ADD REALM</span></div>`;
+            } catch (e) { showToast("Backend unreachable.", true); }
+            checkAuthUI();
         }
 
         async function submitCategory() {
             const id = document.getElementById('edit-cat-id').value;
-            const payload = {
-                name: document.getElementById('cat-name').value,
-                slug: document.getElementById('cat-slug').value.toLowerCase().trim().replace(/\s+/g, '-'),
-                image_url: document.getElementById('cat-img').value,
-                card_type: document.getElementById('cat-type').value
-            };
-            if (!payload.name || !payload.slug || !payload.image_url) return showToast("All fields are required.", true);
-
+            const payload = { name: document.getElementById('cat-name').value, slug: document.getElementById('cat-slug').value.toLowerCase().trim().replace(/\s+/g, '-'), image_url: document.getElementById('cat-img').value, card_type: document.getElementById('cat-type').value };
             const url = id ? `${API_URL}/categories/${id}` : `${API_URL}/categories/`;
-            const res = await fetch(url, {
-                method: id ? "PUT" : "POST",
-                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${localStorage.getItem('token')}` },
-                body: JSON.stringify(payload)
-            });
+            const res = await fetch(url, { method: id ? "PUT" : "POST", headers: getHeaders(), body: JSON.stringify(payload) });
             if (res.ok) { closeModal('cat-modal'); loadRealmCategories(); showToast("Realm saved!"); }
-            else showToast("Failed to save. Identifier might already exist.", true);
         }
+        async function deleteCategory(id) { await fetch(`${API_URL}/categories/${id}`, { method: "DELETE", headers: getHeaders() }); loadRealmCategories(); }
 
-        async function deleteCategory(id) {
-            const res = await fetch(`${API_URL}/categories/${id}`, { method: "DELETE", headers: { "Authorization": `Bearer ${localStorage.getItem('token')}` } });
-            if (res.ok) { loadRealmCategories(); showToast("Realm burned."); }
-        }
-
-        // --- Smart Media Translator ---
+        // --- Posts ---
         function renderSmartMedia(url) {
             if (!url) return '';
-
             const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
-            if (ytMatch && ytMatch[1]) {
-                return `<iframe width="100%" height="350" style="border-radius:12px; margin:25px 0; border:none; box-shadow:0 8px 24px rgba(0,0,0,0.3)" src="https://www.youtube.com/embed/${ytMatch[1]}" allowfullscreen></iframe>`;
-            }
-
-            if (url.includes('spotify.com')) {
-                const cleanEmbed = url.split('?')[0].replace('open.spotify.com/', 'open.spotify.com/embed/');
-                return `<iframe style="border-radius:12px; margin:25px 0; box-shadow:0 8px 24px rgba(0,0,0,0.3)" src="${cleanEmbed}" width="100%" height="152" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>`;
-            }
-
-            if (url.includes('soundcloud.com')) {
-                return `<iframe width="100%" height="166" scrolling="no" frameborder="no" style="border-radius:12px; margin:25px 0;" src="https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}&color=%238a3333&auto_play=false"></iframe>`;
-            }
-
-            return `<a href="${url}" target="_blank" style="display:inline-block; margin:15px 0; font-family:'Courier Prime', monospace; color:var(--accent-red); font-weight:bold;">🔗 Attached External Link</a>`;
-        }
-
-        // --- Posts Handling ---
-        function openPostModal(isEdit = false, p = null) {
-            document.getElementById('post-modal-title').innerText = isEdit ? "Edit Entry" : "Draft New Entry";
-            editingPostTempData = isEdit ? p : null;
-            document.getElementById('edit-post-id').value = isEdit ? p.id : "";
-            document.getElementById('post-title').value = isEdit ? p.title : "";
-            document.getElementById('post-content').value = isEdit ? p.content : "";
-            document.getElementById('post-media-url').value = isEdit ? (p.media_url || "") : "";
-            if (activeCategorySlug) document.getElementById('post-category').value = activeCategorySlug;
-            document.getElementById('image-upload-section').style.display = isEdit ? 'none' : 'block';
-            openModal('post-modal');
-        }
-
-        async function submitPost() {
-            const token = localStorage.getItem('token');
-            const postId = document.getElementById('edit-post-id').value;
-            const fileInput = document.getElementById('post-file-input');
-            let uploadedImagesList = [];
-
-            if (!postId && fileInput.files.length > 0) {
-                showToast("Uploading memories...", false);
-                for (let i = 0; i < fileInput.files.length; i++) {
-                    const fd = new FormData(); fd.append("file", fileInput.files[i]);
-                    try {
-                        const upRes = await fetch(`${API_URL}/posts/upload-image`, { method: "POST", headers: { "Authorization": `Bearer ${token}` }, body: fd });
-                        if (upRes.ok) uploadedImagesList.push((await upRes.json()).image_url);
-                    } catch (e) { console.error("Skipped corrupted file."); }
-                }
-            }
-
-            const payload = {
-                title: document.getElementById('post-title').value,
-                content: document.getElementById('post-content').value,
-                category: document.getElementById('post-category').value,
-                media_url: document.getElementById('post-media-url').value || null,
-                image_url: uploadedImagesList.length > 0 ? uploadedImagesList.join(',') : (postId ? editingPostTempData.image_url : null)
-            };
-
-            if (!payload.title || !payload.content) return showToast("Title and content are required.", true);
-
-            const res = await fetch(postId ? `${API_URL}/posts/${postId}` : `${API_URL}/posts/`, {
-                method: postId ? "PUT" : "POST",
-                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-                body: JSON.stringify(payload)
-            });
-
-            if (res.ok) {
-                closeModal('post-modal'); loadPosts(payload.category);
-                showToast(postId ? "Entry updated." : "Published entry!");
-            } else showToast("Failed to save. Check auth token.", true);
-        }
-
-        async function deletePost(id) {
-            const res = await fetch(`${API_URL}/posts/${id}`, { method: "DELETE", headers: { "Authorization": `Bearer ${localStorage.getItem('token')}` } });
-            if (res.ok) { loadPosts(activeCategorySlug); showToast("Page burned."); }
+            if (ytMatch) return `<iframe width="100%" height="350" style="border-radius:12px; margin:25px 0; border:none; box-shadow:0 8px 24px rgba(0,0,0,0.3)" src="https://www.youtube.com/embed/${ytMatch[1]}" allowfullscreen></iframe>`;
+            if (url.includes('spotify.com')) return `<iframe style="border-radius:12px; margin:25px 0; box-shadow:0 8px 24px rgba(0,0,0,0.3)" src="${url}" width="100%" height="152" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>`;
+            return `<a href="${url}" target="_blank" style="color:var(--accent-red); font-weight:bold;">🔗 External Link</a>`;
         }
 
         async function loadPosts(category) {
             const container = document.getElementById('posts-container');
             const isAdmin = localStorage.getItem('role') === 'admin';
+            const isLogged = !!localStorage.getItem('token');
             container.innerHTML = "<p style='color:var(--text-light); text-align:center; font-style:italic;'>Unfolding pages...</p>";
 
-            const res = await fetch(`${API_URL}/posts/${category}`);
+            const endpoint = category === 'bookmarks' ? '/posts/my-bookmarks' : `/posts/${category}`;
+            const res = await fetch(`${API_URL}${endpoint}`, { headers: getHeaders() });
             const posts = await res.json();
             container.innerHTML = posts.length === 0 ? "<p style='color:var(--text-light); text-align:center;'>These pages are blank... for now.</p>" : "";
 
             posts.forEach(p => {
-                const safeP = JSON.stringify(p).replace(/'/g, "'");
-                const adminBtns = isAdmin ? `<div class="admin-controls"><button onclick='openPostModal(true, ${safeP})'>Edit</button><button onclick='askConfirm("Burn this journal page?", () => deletePost(${p.id}))'>Delete</button></div>` : '';
+                const adminBtns = isAdmin ? `<div class="admin-controls"><button onclick='openPostModal(true, ${JSON.stringify(p).replace(/'/g, "'")})'>Edit</button><button onclick='askConfirm("Burn page?", () => deletePost(${p.id}))'>Delete</button></div>` : '';
+                let polaroidsHTML = p.image_url ? `<div class="polaroid-gallery">${p.image_url.split(',').map(img => `<div class="polaroid-container"><img src="${img}"></div>`).join('')}</div>` : '';
 
-                let polaroidsHTML = '';
-                if (p.image_url) {
-                    const imgArray = p.image_url.split(',');
-                    polaroidsHTML = `<div class="polaroid-gallery">` +
-                        imgArray.map(img => `<div class="polaroid-container"><img src="${API_URL}${img}" alt="memory"></div>`).join('') +
-                        `</div>`;
-                }
-
-                const mediaEmbedHTML = renderSmartMedia(p.media_url);
+                const actionsBar = isLogged ? `
+                        <div class="interaction-bar">
+                            <button class="interaction-btn" onclick="toggleLike(${p.id})">❤️ <span id="like-count-${p.id}">${p.likes_count || 0}</span></button>
+                            <button class="interaction-btn" onclick="toggleBookmark(${p.id})">🔖 Save</button>
+                        </div>` : `<div style="margin: 15px 0; color:var(--text-light); font-size:0.85rem;">❤️ ${p.likes_count || 0} likes</div>`;
 
                 const div = document.createElement('div'); div.className = 'blog-post';
                 div.innerHTML = `
                         ${adminBtns}
                         <div class="post-header"><span class="post-date">${formatDate(p.created_at)}</span><h3>${p.title}</h3></div>
                         <div class="post-body"><p>${p.content}</p></div>
-                        ${mediaEmbedHTML}
+                        ${renderSmartMedia(p.media_url)}
                         ${polaroidsHTML}
+                        ${actionsBar}
                         <div class="comments-section">
                             <h4 class="comments-title">Attached Notes</h4><div id="comments-${p.id}"></div>
                             <div class="comment-form">
-                                <input type="text" id="cname-${p.id}" placeholder="Name" style="flex:1">
+                                <input type="text" id="cname-${p.id}" placeholder="Name" style="flex:1" ${isLogged ? `value="${localStorage.getItem('username')}" disabled` : ''}>
                                 <input type="text" id="ctext-${p.id}" placeholder="Leave a short note..." style="flex:3">
                                 <button onclick="pinComment(${p.id})">Pin</button>
                             </div>
@@ -1067,6 +1050,21 @@
             });
         }
 
+        async function toggleLike(pid) {
+            const res = await fetch(`${API_URL}/posts/${pid}/like`, { method: "POST", headers: getHeaders() });
+            if (res.ok) {
+                const data = await res.json();
+                const countSpan = document.getElementById(`like-count-${pid}`);
+                countSpan.innerText = parseInt(countSpan.innerText) + (data.liked ? 1 : -1);
+            }
+        }
+
+        async function toggleBookmark(pid) {
+            const res = await fetch(`${API_URL}/posts/${pid}/bookmark`, { method: "POST", headers: getHeaders() });
+            if (res.ok) showToast((await res.json()).bookmarked ? "Saved to Bookmarks!" : "Removed from Bookmarks");
+        }
+
+        // --- Comments ---
         async function fetchComments(pid) {
             const box = document.getElementById(`comments-${pid}`);
             const isAdmin = localStorage.getItem('role') === 'admin';
@@ -1075,16 +1073,9 @@
                 const comments = await res.json();
                 box.innerHTML = comments.length === 0 ? "<span style='font-size:0.8rem; color:#8c7d70; font-style:italic;'>No notes attached yet.</span>" : "";
                 comments.forEach(c => {
-                    const delBtn = isAdmin ? `<button style="background:none;border:none;color:#ff6b6b;cursor:pointer;font-size:1rem;padding:0 4px;" onclick='askConfirm("Unpin this marginal note?", () => delComment(${c.id}, ${pid}))' title="Remove Note">×</button>` : '';
-                    box.innerHTML += `
-                            <div class="comment-item">
-                                <div>
-                                    <strong>${c.guest_name}: </strong>
-                                    <span>${c.content}</span>
-                                    <span class="comment-meta">${formatDate(c.created_at)}</span>
-                                </div>
-                                ${delBtn}
-                            </div>`;
+                    const badge = c.user ? `<span class="verified-badge" title="Verified Guest">✓</span>` : '';
+                    const delBtn = isAdmin ? `<button style="background:none;border:none;color:#ff6b6b;cursor:pointer;padding:0 4px;" onclick='askConfirm("Unpin?", () => delComment(${c.id}, ${pid}))'>×</button>` : '';
+                    box.innerHTML += `<div class="comment-item"><div><strong>${c.guest_name} ${badge}: </strong><span>${c.content}</span><span class="comment-meta">${formatDate(c.created_at)}</span></div>${delBtn}</div>`;
                 });
             } catch (e) { box.innerHTML = ""; }
         }
@@ -1092,17 +1083,153 @@
         async function pinComment(pid) {
             const txt = document.getElementById(`ctext-${pid}`);
             if (!txt.value.trim()) return;
-            const res = await fetch(`${API_URL}/comments/`, {
-                method: "POST", headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ content: txt.value, guest_name: document.getElementById(`cname-${pid}`).value.trim() || "Wanderer", post_id: pid })
-            });
+            // نمرر الهيدرز عشان الباك إند يتعرف على اليوزر لو كان مسجل
+            const res = await fetch(`${API_URL}/comments/`, { method: "POST", headers: getHeaders(), body: JSON.stringify({ content: txt.value, guest_name: document.getElementById(`cname-${pid}`).value.trim() || "Wanderer", post_id: pid }) });
             if (res.ok) { txt.value = ''; fetchComments(pid); showToast("Note pinned."); }
-            else showToast("Failed to pin note.", true);
         }
 
+        // --- Guestbook ---
+        async function loadGuestbook() {
+            const container = document.getElementById('guestbook-entries');
+            const res = await fetch(`${API_URL}/guestbook/`);
+            const entries = await res.json();
+            container.innerHTML = entries.map(e => `
+                    <div class="gb-entry">
+                        <p>"${e.content}"</p>
+                        <span>— ${e.user.username} <span style="color:var(--accent-red)">✓</span> on ${formatDate(e.created_at)}</span>
+                    </div>
+                `).join('');
+        }
+
+        async function postGuestbook() {
+            const content = document.getElementById('gb-content').value;
+            if (!content.trim()) return;
+            const res = await fetch(`${API_URL}/guestbook/`, { method: "POST", headers: getHeaders(), body: JSON.stringify({ content }) });
+            if (res.ok) { document.getElementById('gb-content').value = ''; loadGuestbook(); showToast("Guestbook signed!"); }
+        }
+
+        // --- Category Management ---
+        function openCatModal(isEdit = false, cat = null) {
+            document.getElementById('cat-modal-title').innerText = isEdit ? "Edit Realm" : "Create Realm Card";
+            document.getElementById('edit-cat-id').value = isEdit ? cat.id : "";
+            document.getElementById('cat-name').value = isEdit ? cat.name : "";
+            document.getElementById('cat-slug').value = isEdit ? cat.slug : "";
+            document.getElementById('cat-img').value = isEdit ? cat.image_url : "";
+            document.getElementById('cat-type').value = isEdit ? (cat.card_type || 'standard') : "standard";
+            openModal('cat-modal');
+        }
+
+        // --- Post Management ---
+        function openPostModal(isEdit = false, post = null) {
+            document.getElementById('post-modal-title').innerText = isEdit ? "Edit Entry" : "Draft a New Entry";
+            document.getElementById('edit-post-id').value = isEdit ? post.id : "";
+            document.getElementById('post-title').value = isEdit ? post.title : "";
+            document.getElementById('post-content').value = isEdit ? post.content : "";
+            document.getElementById('post-media-url').value = isEdit ? (post.media_url || "") : "";
+            document.getElementById('post-category').value = isEdit ? post.category : (activeCategorySlug || globalCategories[0]?.slug || "");
+            document.getElementById('post-file-input').value = ""; // تصفير الصور المرفوعة
+            editingPostTempData = post;
+            openModal('post-modal');
+        }
+
+        async function submitPost() {
+            const id = document.getElementById('edit-post-id').value;
+            const title = document.getElementById('post-title').value;
+            const content = document.getElementById('post-content').value;
+            const category = document.getElementById('post-category').value;
+            const media_url = document.getElementById('post-media-url').value;
+            const fileInput = document.getElementById('post-file-input');
+            const submitBtn = document.querySelector('#post-modal .submit-btn');
+
+            if (!title || !content || !category) {
+                showToast("Please fill the title and your thoughts.", true);
+                return;
+            }
+
+            submitBtn.innerText = "Publishing...";
+            let finalImageUrls = [];
+
+            // رفع الصور لـ Cloudinary إذا تم اختيار صور جديدة
+            if (fileInput.files.length > 0) {
+                for (let i = 0; i < fileInput.files.length; i++) {
+                    const formData = new FormData();
+                    formData.append("file", fileInput.files[i]);
+                    try {
+                        const upRes = await fetch(`${API_URL}/posts/upload-image`, {
+                            method: "POST",
+                            headers: { "Authorization": `Bearer ${localStorage.getItem('token')}` },
+                            body: formData
+                        });
+                        if (upRes.ok) {
+                            const data = await upRes.json();
+                            finalImageUrls.push(data.image_url);
+                        }
+                    } catch (e) {
+                        showToast("Failed to upload a polaroid.", true);
+                    }
+                }
+            }
+
+            // الحفاظ على الصور القديمة في حالة التعديل ولم يتم رفع صور جديدة
+            if (id && editingPostTempData && editingPostTempData.image_url && fileInput.files.length === 0) {
+                finalImageUrls = editingPostTempData.image_url.split(',');
+            }
+
+            const payload = {
+                title, content, category, media_url,
+                image_url: finalImageUrls.length > 0 ? finalImageUrls.join(',') : null
+            };
+
+            try {
+                const res = await fetch(id ? `${API_URL}/posts/${id}` : `${API_URL}/posts/`, {
+                    method: id ? "PUT" : "POST",
+                    headers: getHeaders(),
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    closeModal('post-modal');
+                    showToast(id ? "Entry updated beautifully!" : "New entry published!");
+                    loadPosts(category); // إعادة تحميل المقالات
+                } else {
+                    showToast("Failed to publish the entry.", true);
+                }
+            } catch (e) {
+                showToast("Server error.", true);
+            } finally {
+                submitBtn.innerText = "Publish Entry";
+            }
+        }
+
+        async function deletePost(id) {
+            try {
+                const res = await fetch(`${API_URL}/posts/${id}`, {
+                    method: "DELETE",
+                    headers: getHeaders()
+                });
+                if (res.ok) {
+                    showToast("Page burned and removed.");
+                    loadPosts(activeCategorySlug || 'home');
+                }
+            } catch (e) {
+                showToast("Failed to delete.", true);
+            }
+        }
+
+        // --- Comment Deletion (Admin only) ---
         async function delComment(cid, pid) {
-            await fetch(`${API_URL}/comments/${cid}`, { method: "DELETE", headers: { "Authorization": `Bearer ${localStorage.getItem('token')}` } });
-            fetchComments(pid); showToast("Note unpinned.");
+            try {
+                const res = await fetch(`${API_URL}/comments/${cid}`, {
+                    method: "DELETE",
+                    headers: getHeaders()
+                });
+                if (res.ok) {
+                    fetchComments(pid);
+                    showToast("Note unpinned.");
+                }
+            } catch (e) {
+                showToast("Failed to unpin note.", true);
+            }
         }
     </script>
 </body>

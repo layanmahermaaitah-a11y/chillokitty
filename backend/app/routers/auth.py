@@ -13,18 +13,14 @@ from ..schemas import UserCreate, UserOut
 
 router = APIRouter()
 
-# إعداد نظام تشفير كلمات المرور (Bcrypt)
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-# إعداد نظام استخراج التوكن من الطلبات
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+oauth2_scheme_optional = OAuth2PasswordBearer(tokenUrl="auth/login", auto_error=False)
 
-# المتغيرات السرية المأخوذة من ملف .env
 SECRET_KEY = os.getenv("JWT_SECRET", "supersecretkey_change_this_later_12345")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60  # صلاحية التوكن ساعة واحدة
+ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
-# --- دالات مساعدة (Helper Functions) ---
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
 
@@ -36,12 +32,10 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
     else:
-        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
+        expire = datetime.now(timezone.utc) + timedelta(minutes=60)
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
-# دالة حماية (Dependency) للتحقق من هوية المستخدم في المسارات المحمية مستقبلاً
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -61,21 +55,26 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         raise credentials_exception
     return user
 
+# دالة مخصصة لا تجبر الزائر على امتلاك توكن، مفيدة للتعليقات
+def get_optional_user(token: str = Depends(oauth2_scheme_optional), db: Session = Depends(get_db)):
+    if not token:
+        return None
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username:
+            return db.query(User).filter(User.username == username).first()
+    except:
+        pass
+    return None
 
-# --- مسارات الـ API (Endpoints) ---
-
-# 1. مسار إنشاء حساب جديد
 @router.post("/register", response_model=UserOut, status_code=status.HTTP_201_CREATED)
 def register_user(user_data: UserCreate, db: Session = Depends(get_db)):
-    # التأكد من أن اسم المستخدم غير مكرر
     existing_user = db.query(User).filter(User.username == user_data.username).first()
     if existing_user:
         raise HTTPException(status_code=400, detail="Username already registered")
     
-    # تشفير كلمة المرور قبل الحفظ
     hashed_pwd = hash_password(user_data.password)
-    
-    # أول حساب يتم إنشاؤه سيكون هو الـ Admin (أنتِ)، وباقي الحسابات guest تلقائياً
     user_count = db.query(User).count()
     user_role = "admin" if user_count == 0 else "guest"
 
@@ -85,8 +84,6 @@ def register_user(user_data: UserCreate, db: Session = Depends(get_db)):
     db.refresh(new_user)
     return new_user
 
-
-# 2. مسار تسجيل الدخول وإصدار التوكن (JWT Token)
 @router.post("/login")
 def login_user(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = db.query(User).filter(User.username == form_data.username).first()
@@ -96,6 +93,11 @@ def login_user(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = D
             detail="Invalid username or password"
         )
     
-    # إنشاء الـ Token وحقن اسم المستخدم وصلاحيته بداخلها
     access_token = create_access_token(data={"sub": user.username, "role": user.role})
-    return {"access_token": access_token, "token_type": "bearer", "role": user.role}
+    return {
+        "access_token": access_token, 
+        "token_type": "bearer", 
+        "role": user.role, 
+        "user_id": user.id, 
+        "username": user.username
+    }
