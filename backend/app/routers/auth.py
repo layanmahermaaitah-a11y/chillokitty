@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 import jwt
-from passlib.context import CryptContext
+import bcrypt  # استخدام مباشر بدلاً من passlib
 
 from ..database import get_db
 from ..models import User
@@ -13,7 +13,6 @@ from ..schemas import UserCreate, UserOut
 
 router = APIRouter()
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 oauth2_scheme_optional = OAuth2PasswordBearer(tokenUrl="auth/login", auto_error=False)
 
@@ -21,11 +20,19 @@ SECRET_KEY = os.getenv("JWT_SECRET", "supersecretkey_change_this_later_12345")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
+# --- دالات التشفير الجديدة الآمنة ---
 def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
+    salt = bcrypt.gensalt()
+    pwd_bytes = password.encode('utf-8')
+    return bcrypt.hashpw(pwd_bytes, salt).decode('utf-8')
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
+    try:
+        password_bytes = plain_password.encode('utf-8')
+        hashed_bytes = hashed_password.encode('utf-8')
+        return bcrypt.checkpw(password_bytes, hashed_bytes)
+    except Exception:
+        return False
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
@@ -55,7 +62,6 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         raise credentials_exception
     return user
 
-# دالة مخصصة لا تجبر الزائر على امتلاك توكن، مفيدة للتعليقات
 def get_optional_user(token: str = Depends(oauth2_scheme_optional), db: Session = Depends(get_db)):
     if not token:
         return None
@@ -68,6 +74,9 @@ def get_optional_user(token: str = Depends(oauth2_scheme_optional), db: Session 
         pass
     return None
 
+
+# --- مسارات الـ API ---
+
 @router.post("/register", response_model=UserOut, status_code=status.HTTP_201_CREATED)
 def register_user(user_data: UserCreate, db: Session = Depends(get_db)):
     existing_user = db.query(User).filter(User.username == user_data.username).first()
@@ -75,6 +84,7 @@ def register_user(user_data: UserCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Username already registered")
     
     hashed_pwd = hash_password(user_data.password)
+    
     user_count = db.query(User).count()
     user_role = "admin" if user_count == 0 else "guest"
 

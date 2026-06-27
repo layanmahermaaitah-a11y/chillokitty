@@ -13,7 +13,7 @@ app = FastAPI(title="Leru's Cozy Blog API", version="2.0")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False, # التعديل السحري هنا
     allow_methods=["*"],
     allow_headers=["*"],
 )
