@@ -7,6 +7,8 @@ from ..database import get_db
 from ..models import Post, User
 from ..schemas import PostCreate, PostOut
 from .auth import get_current_user
+from typing import List
+
 
 router = APIRouter()
 
