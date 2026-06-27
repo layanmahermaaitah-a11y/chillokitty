@@ -123,8 +123,8 @@
         }
 
         .nav-header {
-            width: 90%;
-            max-width: 1000px;
+            width: 95%;
+            max-width: 1400px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -158,7 +158,7 @@
         .page-section {
             display: none;
             width: 100%;
-            max-width: 950px;
+            max-width: 1200px;
             animation: fadeUp 0.6s ease forwards;
         }
 
@@ -181,8 +181,8 @@
         /* --- Home Cards Grid --- */
         .home-grid {
             display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 40px;
+            grid-template-columns: 350px 1fr;
+            gap: 50px;
             width: 100%;
         }
 
@@ -346,7 +346,7 @@
         .blog-post {
             background: var(--paper-color);
             color: #2b1f18;
-            padding: 50px 60px;
+            padding: 60px 80px;
             margin-bottom: 60px;
             position: relative;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
@@ -397,8 +397,9 @@
         }
 
         .post-body p {
-            line-height: 1.9;
-            font-size: 1.05rem;
+            font-size: 1.15rem; /* كان 1.05rem */
+            line-height: 2.1;
+            color: #3b2f25;
             white-space: pre-wrap;
             margin-bottom: 20px;
         }
@@ -691,13 +692,17 @@
 
     <div id="toast-container"></div>
 
+    <!-- استبدلي قسم login-modal بهذا الكود -->
     <div class="modal-overlay" id="login-modal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal('login-modal')">×</button>
-            <h3>Admin Login</h3>
-            <input type="text" id="login-username" placeholder="Username" required>
-            <input type="password" id="login-password" placeholder="Password" required>
-            <button class="submit-btn" onclick="handleLogin()">Unlock Archives</button>
+            <h3 id="auth-title">Admin / Guest Login</h3>
+
+            <input type="text" id="auth-username" placeholder="Username" required>
+            <input type="password" id="auth-password" placeholder="Password" required>
+
+            <button class="submit-btn" id="auth-action-btn" onclick="handleLogin()">Unlock Archives</button>
+            <button class="cozy-btn" style="margin-top: 10px; border:none; text-decoration:underline;" id="toggle-auth-btn" onclick="toggleAuthMode()">New here? Create an account</button>
         </div>
     </div>
 
@@ -766,7 +771,8 @@
                     <img class="profile-img" src="https://i.pinimg.com/736x/6c/58/f9/6c58f97aeeedae5b58ce40915d1b8f90.jpg" alt="Layan">
                     <div class="profile-bio">
                         <h2>layan's corner</h2>
-                        <p>Welcome to my headspace. I spend my time wandering, writing, and chasing the perfect aesthetic light. This blog is a collection of my favorite things—the quiet, the moody, and the beautiful. Make yourself at home.</div>
+                        <p>Welcome to my headspace. I spend my time wandering, writing, and chasing the perfect aesthetic light. This blog is a collection of my favorite things—the quiet, the moody, and the beautiful. Make yourself at home.
+                    </div>
                 </div>
                 <div class="custom-cards-grid" id="cards-grid-target"></div>
             </div>
@@ -830,7 +836,7 @@
 
         async function loadRealmCategories() {
             const target = document.getElementById('cards-grid-target');
-            const isAdmin = !!localStorage.getItem('token');
+            const isAdmin = localStorage.getItem('role') === 'admin';
             try {
                 const res = await fetch(`${API_URL}/categories/`);
                 globalCategories = await res.json();
@@ -842,25 +848,25 @@
                 globalCategories.forEach(c => {
                     const safeCat = JSON.stringify(c).replace(/'/g, "'");
                     const adminBar = isAdmin ? `
-                            <div class="card-admin-bar">
-                                <span onclick='event.stopPropagation(); openCatModal(true, ${safeCat})' title="Edit Card">✏️</span>
-                                <span onclick='event.stopPropagation(); askConfirm("Destroy the ${c.name} realm card?", () => deleteCategory(${c.id}))' style="color:#ff6b6b" title="Delete">🗑️</span>
-                            </div>` : '';
+                                <div class="card-admin-bar">
+                                    <span onclick='event.stopPropagation(); openCatModal(true, ${safeCat})' title="Edit Card">✏️</span>
+                                    <span onclick='event.stopPropagation(); askConfirm("Destroy the ${c.name} realm card?", () => deleteCategory(${c.id}))' style="color:#ff6b6b" title="Delete">🗑️</span>
+                                </div>` : '';
 
                     target.innerHTML += `
-                            <div class="vintage-card" onclick="navigateTo('${c.slug}', '${c.name}')">
-                                ${adminBar}
-                                <img src="${c.image_url}" alt="${c.name}">
-                                <div class="vintage-card-title">${c.name}</div>
-                            </div>`;
+                                <div class="vintage-card" onclick="navigateTo('${c.slug}', '${c.name}')">
+                                    ${adminBar}
+                                    <img src="${c.image_url}" alt="${c.name}">
+                                    <div class="vintage-card-title">${c.name}</div>
+                                </div>`;
                 });
 
                 if (isAdmin) {
                     target.innerHTML += `
-                            <div class="vintage-card add-card-placeholder" onclick="openCatModal(false)">
-                                <span style="font-size:2.2rem">+</span>
-                                <span style="font-size:0.8rem; margin-top:6px">ADD REALM</span>
-                            </div>`;
+                                <div class="vintage-card add-card-placeholder" onclick="openCatModal(false)">
+                                    <span style="font-size:2.2rem">+</span>
+                                    <span style="font-size:0.8rem; margin-top:6px">ADD REALM</span>
+                                </div>`;
                 }
             } catch (e) { showToast("Backend unreachable. Ensure Uvicorn is running.", true); }
             checkAuthUI();
@@ -898,17 +904,39 @@
         }
 
         async function handleLogin() {
-            const u = document.getElementById('login-username').value;
-            const p = document.getElementById('login-password').value;
+            // 1. تحديث الـ IDs لتتطابق مع الفورم المشترك الجديد
+            const u = document.getElementById('auth-username').value;
+            const p = document.getElementById('auth-password').value;
+
             const params = new URLSearchParams({ username: u, password: p });
+
             try {
-                const res = await fetch(`${API_URL}/auth/login`, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: params });
+                const res = await fetch(`${API_URL}/auth/login`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: params
+                });
+
                 if (res.ok) {
-                    localStorage.setItem('token', (await res.json()).access_token);
-                    showToast("Identity confirmed. Welcome back."); closeModal('login-modal');
+                    const data = await res.json();
+
+                    // 2. حفظ التوكن
+                    localStorage.setItem('token', data.access_token);
+
+                    // 3. حفظ الـ role (admin أو guest) للاستفادة منه في الفرونت إند
+                    localStorage.setItem('role', data.role);
+
+                    showToast("Identity confirmed. Welcome back.");
+                    closeModal('login-modal');
+
+                    // تحديث الواجهة بناءً على الصلاحيات الجديدة
                     loadRealmCategories();
-                } else showToast("Invalid credentials.", true);
-            } catch (e) { showToast("Server error.", true); }
+                } else {
+                    showToast("Invalid credentials.", true);
+                }
+            } catch (e) {
+                showToast("Server error.", true);
+            }
         }
 
         // --- Category Logic ---
@@ -1027,7 +1055,7 @@
 
         async function loadPosts(category) {
             const container = document.getElementById('posts-container');
-            const isAdmin = !!localStorage.getItem('token');
+            const isAdmin = localStorage.getItem('role') === 'admin';
             container.innerHTML = "<p style='color:var(--text-light); text-align:center; font-style:italic;'>Unfolding pages...</p>";
 
             const res = await fetch(`${API_URL}/posts/${category}`);
@@ -1050,26 +1078,26 @@
 
                 const div = document.createElement('div'); div.className = 'blog-post';
                 div.innerHTML = `
-                        ${adminBtns}
-                        <div class="post-header"><span class="post-date">${formatDate(p.created_at)}</span><h3>${p.title}</h3></div>
-                        <div class="post-body"><p>${p.content}</p></div>
-                        ${mediaEmbedHTML}
-                        ${polaroidsHTML}
-                        <div class="comments-section">
-                            <h4 class="comments-title">Attached Notes</h4><div id="comments-${p.id}"></div>
-                            <div class="comment-form">
-                                <input type="text" id="cname-${p.id}" placeholder="Name" style="flex:1">
-                                <input type="text" id="ctext-${p.id}" placeholder="Leave a short note..." style="flex:3">
-                                <button onclick="pinComment(${p.id})">Pin</button>
-                            </div>
-                        </div>`;
+                            ${adminBtns}
+                            <div class="post-header"><span class="post-date">${formatDate(p.created_at)}</span><h3>${p.title}</h3></div>
+                            <div class="post-body"><p>${p.content}</p></div>
+                            ${mediaEmbedHTML}
+                            ${polaroidsHTML}
+                            <div class="comments-section">
+                                <h4 class="comments-title">Attached Notes</h4><div id="comments-${p.id}"></div>
+                                <div class="comment-form">
+                                    <input type="text" id="cname-${p.id}" placeholder="Name" style="flex:1">
+                                    <input type="text" id="ctext-${p.id}" placeholder="Leave a short note..." style="flex:3">
+                                    <button onclick="pinComment(${p.id})">Pin</button>
+                                </div>
+                            </div>`;
                 container.appendChild(div); fetchComments(p.id);
             });
         }
 
         async function fetchComments(pid) {
             const box = document.getElementById(`comments-${pid}`);
-            const isAdmin = !!localStorage.getItem('token');
+            const isAdmin = localStorage.getItem('role') === 'admin';
             try {
                 const res = await fetch(`${API_URL}/comments/post/${pid}`);
                 const comments = await res.json();
@@ -1077,14 +1105,14 @@
                 comments.forEach(c => {
                     const delBtn = isAdmin ? `<button style="background:none;border:none;color:#ff6b6b;cursor:pointer;font-size:1rem;padding:0 4px;" onclick='askConfirm("Unpin this marginal note?", () => delComment(${c.id}, ${pid}))' title="Remove Note">×</button>` : '';
                     box.innerHTML += `
-                            <div class="comment-item">
-                                <div>
-                                    <strong>${c.guest_name}: </strong>
-                                    <span>${c.content}</span>
-                                    <span class="comment-meta">${formatDate(c.created_at)}</span>
-                                </div>
-                                ${delBtn}
-                            </div>`;
+                                <div class="comment-item">
+                                    <div>
+                                        <strong>${c.guest_name}: </strong>
+                                        <span>${c.content}</span>
+                                        <span class="comment-meta">${formatDate(c.created_at)}</span>
+                                    </div>
+                                    ${delBtn}
+                                </div>`;
                 });
             } catch (e) { box.innerHTML = ""; }
         }
@@ -1104,6 +1132,39 @@
             await fetch(`${API_URL}/comments/${cid}`, { method: "DELETE", headers: { "Authorization": `Bearer ${localStorage.getItem('token')}` } });
             fetchComments(pid); showToast("Note unpinned.");
         }
+
+        let isLoginMode = true;
+
+        function toggleAuthMode() {
+            isLoginMode = !isLoginMode;
+            document.getElementById('auth-title').innerText = isLoginMode ? "Admin / Guest Login" : "Join the Realm";
+            document.getElementById('auth-action-btn').innerText = isLoginMode ? "Unlock Archives" : "Create Account";
+            document.getElementById('auth-action-btn').onclick = isLoginMode ? handleLogin : handleRegister;
+            document.getElementById('toggle-auth-btn').innerText = isLoginMode ? "New here? Create an account" : "Already have the key? Login";
+        }
+
+        async function handleRegister() {
+            const u = document.getElementById('auth-username').value;
+            const p = document.getElementById('auth-password').value;
+
+            try {
+                const res = await fetch(`${API_URL}/auth/register`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username: u, password: p })
+                });
+
+                if (res.ok) {
+                    showToast("Account created successfully! You can now login.");
+                    toggleAuthMode(); // العودة لشاشة تسجيل الدخول
+                } else {
+                    const error = await res.json();
+                    showToast(error.detail || "Registration failed.", true);
+                }
+            } catch (e) { showToast("Server error.", true); }
+        }
+
+        // ولا تنسي تعديل دالة handleLogin لتأخذ القيم من auth-username و auth-password
     </script>
 </body>
 </html>
